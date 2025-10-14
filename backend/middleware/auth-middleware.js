@@ -20,6 +20,15 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(error);
+
+    // Return 401 for JWT errors to trigger auto-logout
+    if (
+      error.name === "TokenExpiredError" ||
+      error.name === "JsonWebTokenError"
+    ) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,15 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    const handleLogout = () => {
-      logout();
-      navigate('/sign-in');
-    };
-    window.addEventListener('force-logout', handleLogout);
-    return () => window.removeEventListener('force-logout', handleLogout);
-  }, []);
-
   const login = async (data: any) => {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
@@ -71,6 +62,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     queryClient.clear();
   };
 
+  useEffect(() => {
+    const handleLogout = () => {
+      console.log('🔒 Auto-logout triggered - Clearing session');
+
+      // Clear storage immediately
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      // Clear state immediately
+      setUser(null);
+      setIsAuthenticated(false);
+
+      // Clear React Query cache
+      queryClient.clear();
+
+      // Navigate to sign-in
+      navigate('/sign-in');
+    };
+
+    window.addEventListener('force-logout', handleLogout);
+    return () => window.removeEventListener('force-logout', handleLogout);
+  }, [navigate]);
+
   const values = {
     user,
     isAuthenticated,
@@ -79,13 +93,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logout,
   };
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
-};
+}
 
-export const useAuth = () => {
+function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
+
+export { AuthProvider, useAuth };

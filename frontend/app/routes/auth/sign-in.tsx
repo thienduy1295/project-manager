@@ -1,7 +1,4 @@
-import { signInSchema } from '@/lib/schema';
-import { useForm } from 'react-hook-form';
-import type z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -19,12 +16,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router';
 import { useLoginMutation } from '@/hooks/use-auth';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { signInSchema } from '@/lib/schema';
 import { useAuth } from '@/provider/auth-context';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
+import type z from 'zod';
 
 type SignInFormData = z.infer<typeof signInSchema>;
 
@@ -50,7 +50,8 @@ const SignIn = () => {
         navigate('/dashboard');
       },
       onError: (error: any) => {
-        const errorMessage = error.response?.data?.message || 'An error occurred';
+        const errorMessage =
+          error.response?.data?.message || 'An error occurred';
         console.log(error);
         toast.error(errorMessage);
       },
@@ -68,7 +69,10 @@ const SignIn = () => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleOnSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleOnSubmit)}
+              className="space-y-6"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -76,7 +80,11 @@ const SignIn = () => {
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email@example.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="email@example.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -89,12 +97,19 @@ const SignIn = () => {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <Link to="/forgot-password" className="text-sm text-blue-600">
+                      <Link
+                        to="/forgot-password"
+                        className="text-sm text-blue-600"
+                      >
                         Forgot password?
                       </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

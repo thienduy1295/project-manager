@@ -21,6 +21,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      console.warn('⚠️ 401 Unauthorized - Triggering auto-logout');
       window.dispatchEvent(new Event('force-logout'));
     }
     return Promise.reject(error);
