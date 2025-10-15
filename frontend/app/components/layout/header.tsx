@@ -1,7 +1,7 @@
 import { useAuth } from '@/provider/auth-context';
 import type { Workspace } from '@/types';
 import { Bell, PlusCircle } from 'lucide-react';
-import { Link, useLoaderData } from 'react-router';
+import { Link, useLoaderData, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
 import {
@@ -26,8 +26,25 @@ export const Header = ({
   selectedWorkspace,
   onCreateWorkspace,
 }: HeaderProps) => {
+  const navigate = useNavigate();
+
   const { user, logout } = useAuth();
   const { workspaces } = useLoaderData() as { workspaces: Workspace[] };
+
+  const isOnWorkspacePage = useLocation().pathname.includes('/workspaces');
+
+  const handleOnClick = (workspace: Workspace) => {
+    onWorkspaceSelected(workspace);
+    const location = window.location;
+
+    if (isOnWorkspacePage) {
+      navigate(`/workspaces/${workspace._id}`);
+    } else {
+      const basePath = location.pathname;
+
+      navigate(`${basePath}?workspaceId=${workspace._id}`);
+    }
+  };
 
   return (
     <div className="bg-background sticky top-0 z-40 border-b">
@@ -57,8 +74,13 @@ export const Header = ({
 
             <DropdownMenuGroup>
               {workspaces.map((ws) => (
-                <DropdownMenuItem key={ws._id} onClick={() => onWorkspaceSelected(ws)}>
-                  {ws.color && <WorkspaceAvatar color={ws.color} name={ws.name} />}
+                <DropdownMenuItem
+                  key={ws._id}
+                  onClick={() => handleOnClick(ws)}
+                >
+                  {ws.color && (
+                    <WorkspaceAvatar color={ws.color} name={ws.name} />
+                  )}
                   <span className="ml-2">{ws.name}</span>
                 </DropdownMenuItem>
               ))}

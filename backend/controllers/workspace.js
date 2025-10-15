@@ -530,6 +530,7 @@ const acceptInviteByToken = async (req, res) => {
     });
   }
 };
+
 export {
   acceptGenerateInvite,
   acceptInviteByToken,
