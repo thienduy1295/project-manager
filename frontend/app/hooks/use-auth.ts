@@ -10,25 +10,38 @@ export const useSignUpMutation = () => {
 
 export const useVerifyEmailMutation = () => {
   return useMutation({
-    mutationFn: (data: { token: string }) => postData('/auth/verify-email', data),
+    mutationFn: (data: { token: string }) =>
+      postData('/auth/verify-email', data),
   });
 };
 
 export const useLoginMutation = () => {
   return useMutation({
-    mutationFn: (data: { email: string; password: string }) => postData('/auth/login', data),
+    mutationFn: (data: { email: string; password: string }) =>
+      postData('/auth/login', data),
+  });
+};
+
+export const useLogoutMutation = () => {
+  return useMutation({
+    mutationFn: (data: { refreshToken?: string }) =>
+      postData('/auth/logout', data),
   });
 };
 
 export const useForgotPasswordMutation = () => {
   return useMutation({
-    mutationFn: (data: { email: string }) => postData('/auth/reset-password-request', data),
+    mutationFn: (data: { email: string }) =>
+      postData('/auth/reset-password-request', data),
   });
 };
 
 export const useResetPasswordMutation = () => {
   return useMutation({
-    mutationFn: (data: { token: string; newPassword: string; confirmPassword: string }) =>
-      postData('/auth/reset-password', data),
+    mutationFn: (data: {
+      token: string;
+      newPassword: string;
+      confirmPassword: string;
+    }) => postData('/auth/reset-password', data),
   });
 };

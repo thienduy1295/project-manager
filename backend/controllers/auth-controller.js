@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import aj from "../libs/arcjet.js";
 import { sendEmail } from "../libs/send-email.js";
+import RefreshToken from "../models/refresh-token.js";
 import User from "../models/user.js";
 import Verification from "../models/verification.js";
 
@@ -134,13 +135,34 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign(
+    // Generate access token (short-lived)
+    const accessToken = jwt.sign(
       { userId: user._id, purpose: "login" },
       process.env.JWT_SECRET,
       {
-        expiresIn: "7d",
+        expiresIn: "15m", // 15 minutes
       }
     );
+
+    // Generate refresh token (long-lived)
+    const refreshTokenValue = jwt.sign(
+      { userId: user._id, purpose: "refresh" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d", // 7 days
+      }
+    );
+
+    // Save refresh token to database
+    await RefreshToken.create({
+      userId: user._id,
+      token: refreshTokenValue,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      deviceInfo: {
+        userAgent: req.headers["user-agent"],
+        ipAddress: req.ip || req.connection.remoteAddress,
+      },
+    });
 
     user.lastLogin = new Date();
     await user.save();
@@ -150,7 +172,8 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      token,
+      accessToken,
+      refreshToken: refreshTokenValue,
       user: userData,
     });
   } catch (error) {
@@ -328,8 +351,119 @@ const verifyResetPasswordTokenAndResetPassword = async (req, res) => {
   }
 };
 
+const refreshAccessToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token is required" });
+    }
+
+    // Verify refresh token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    if (decoded.purpose !== "refresh") {
+      return res.status(401).json({ message: "Invalid token purpose" });
+    }
+
+    // Check if refresh token exists in database and is not revoked
+    const storedToken = await RefreshToken.findOne({
+      token: refreshToken,
+      userId: decoded.userId,
+      isRevoked: false,
+    });
+
+    if (!storedToken) {
+      return res.status(401).json({ message: "Invalid refresh token" });
+    }
+
+    // Check if refresh token is expired
+    if (storedToken.expiresAt < new Date()) {
+      await RefreshToken.findByIdAndUpdate(storedToken._id, {
+        isRevoked: true,
+      });
+      return res.status(401).json({ message: "Refresh token expired" });
+    }
+
+    // Get user
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    // Generate new access token
+    const newAccessToken = jwt.sign(
+      { userId: user._id, purpose: "login" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "15m", // 15 minutes
+      }
+    );
+
+    // Optionally rotate refresh token for security
+    const newRefreshTokenValue = jwt.sign(
+      { userId: user._id, purpose: "refresh" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    // Revoke old refresh token and create new one
+    await RefreshToken.findByIdAndUpdate(storedToken._id, { isRevoked: true });
+
+    await RefreshToken.create({
+      userId: user._id,
+      token: newRefreshTokenValue,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      deviceInfo: {
+        userAgent: req.headers["user-agent"],
+        ipAddress: req.ip || req.connection.remoteAddress,
+      },
+    });
+
+    res.status(200).json({
+      message: "Token refreshed successfully",
+      accessToken: newAccessToken,
+      refreshToken: newRefreshTokenValue,
+    });
+  } catch (error) {
+    console.log(error);
+
+    if (
+      error.name === "TokenExpiredError" ||
+      error.name === "JsonWebTokenError"
+    ) {
+      return res.status(401).json({ message: "Invalid refresh token" });
+    }
+
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (refreshToken) {
+      // Revoke refresh token
+      await RefreshToken.findOneAndUpdate(
+        { token: refreshToken },
+        { isRevoked: true }
+      );
+    }
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export {
   loginUser,
+  logoutUser,
+  refreshAccessToken,
   registerUser,
   resetPasswordRequest,
   verifyEmail,

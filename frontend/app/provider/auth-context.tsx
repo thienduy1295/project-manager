@@ -29,10 +29,17 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
 
       const userInfo = localStorage.getItem('user');
-      if (userInfo) {
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (userInfo && accessToken && refreshToken) {
         setUser(JSON.parse(userInfo));
         setIsAuthenticated(true);
       } else {
+        // Clear any partial auth data
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         setIsAuthenticated(false);
         if (!isPublicRoute) {
           navigate('/sign-in');
@@ -45,7 +52,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (data: any) => {
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('user', JSON.stringify(data.user));
 
     setUser(data.user);
@@ -53,7 +61,26 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    localStorage.removeItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    // Call logout API to revoke refresh token
+    if (refreshToken) {
+      try {
+        await fetch('/api-v1/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refreshToken }),
+        });
+      } catch (error) {
+        console.error('Logout API call failed:', error);
+      }
+    }
+
+    // Clear local storage
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
 
     setUser(null);
@@ -67,7 +94,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔒 Auto-logout triggered - Clearing session');
 
       // Clear storage immediately
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
 
       // Clear state immediately

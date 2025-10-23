@@ -4,6 +4,8 @@ import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
 import {
   loginUser,
+  logoutUser,
+  refreshAccessToken,
   registerUser,
   resetPasswordRequest,
   verifyEmail,
@@ -56,6 +58,26 @@ router.post(
     body: resetPasswordSchema,
   }),
   verifyResetPasswordTokenAndResetPassword
+);
+
+router.post(
+  "/refresh-token",
+  validateRequest({
+    body: z.object({
+      refreshToken: z.string().min(1, "Refresh token is required"),
+    }),
+  }),
+  refreshAccessToken
+);
+
+router.post(
+  "/logout",
+  validateRequest({
+    body: z.object({
+      refreshToken: z.string().optional(),
+    }),
+  }),
+  logoutUser
 );
 
 export default router;
