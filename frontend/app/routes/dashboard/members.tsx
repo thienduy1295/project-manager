@@ -10,19 +10,35 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetWorkspaceDetailsQuery } from '@/hooks/use-workspace';
+import { CreateWorkspace } from '@/components/workspace/create-workspace';
+import WorkspaceSelection from '@/components/workspace/workspace-selection';
+import {
+  useGetWorkspaceDetailsQuery,
+  useGetWorkspacesQuery,
+} from '@/hooks/use-workspace';
 import type { Workspace } from '@/types';
 import { Grid, List } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useOutletContext, useSearchParams } from 'react-router';
 
 const Members = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { onWorkspaceSelected } = useOutletContext<{
+    onWorkspaceSelected: (workspace: Workspace) => void;
+  }>();
 
   const workspaceId = searchParams.get('workspaceId');
   const initialSearch = searchParams.get('search') || '';
 
   const [search, setSearch] = useState<string>(initialSearch);
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+
+  // Get workspaces to check if user has any
+  const { data: workspaces, isLoading: workspacesLoading } =
+    useGetWorkspacesQuery() as {
+      data: Workspace[];
+      isLoading: boolean;
+    };
 
   useEffect(() => {
     const params: Record<string, string> = {};
@@ -42,10 +58,27 @@ const Members = () => {
     if (urlSearch !== search) setSearch(urlSearch);
   }, [searchParams]);
 
+  // Only fetch workspace details if workspaceId is provided
   const { data, isLoading } = useGetWorkspaceDetailsQuery(workspaceId!) as {
     data: Workspace;
     isLoading: boolean;
   };
+
+  // Show workspace selection if no workspaceId or if workspaces are loading
+  if (!workspaceId || workspacesLoading) {
+    return (
+      <>
+        <WorkspaceSelection
+          onWorkspaceSelected={onWorkspaceSelected}
+          onCreateWorkspace={() => setIsCreatingWorkspace(true)}
+        />
+        <CreateWorkspace
+          isCreatingWorkspace={isCreatingWorkspace}
+          setIsCreatingWorkspace={setIsCreatingWorkspace}
+        />
+      </>
+    );
+  }
 
   if (isLoading) return <Loader />;
 
@@ -172,6 +205,11 @@ const Members = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <CreateWorkspace
+        isCreatingWorkspace={isCreatingWorkspace}
+        setIsCreatingWorkspace={setIsCreatingWorkspace}
+      />
     </div>
   );
 };

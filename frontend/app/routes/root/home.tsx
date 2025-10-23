@@ -1,12 +1,11 @@
-import React from "react";
-import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import type { Route } from "../../+types/root";
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router';
+import type { Route } from '../../+types/root';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "TaskHub" },
-    { name: "description", content: "Welcome to TaskHub!" },
+    { title: 'TaskIO' },
+    { name: 'description', content: 'Welcome to TaskIO!' },
   ];
 }
 

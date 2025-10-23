@@ -1,7 +1,4 @@
-import { signUpSchema } from '@/lib/schema';
-import { useForm } from 'react-hook-form';
-import type z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -19,10 +16,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router';
 import { useSignUpMutation } from '@/hooks/use-auth';
+import { signUpSchema } from '@/lib/schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import type z from 'zod';
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 
@@ -52,7 +52,8 @@ const SignUp = () => {
         navigate('/sign-in');
       },
       onError: (error: any) => {
-        const errorMessage = error.response?.data?.message || 'An error occurred';
+        const errorMessage =
+          error.response?.data?.message || 'An error occurred';
 
         console.log(error);
         toast.error(errorMessage);
@@ -64,14 +65,19 @@ const SignUp = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Create an account
+          </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             Create an account to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleOnSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleOnSubmit)}
+              className="space-y-6"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -79,7 +85,11 @@ const SignUp = () => {
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email@example.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="email@example.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,7 +116,11 @@ const SignUp = () => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,7 +133,11 @@ const SignUp = () => {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -135,7 +153,10 @@ const SignUp = () => {
           <CardFooter className="flex items-center justify-center mt-6">
             <div className="flex items-center justify-center">
               <p className="text-sm text-muted-foreground">
-                Already have an account? <Link to="/sign-in">Sign in</Link>
+                Already have an account?{' '}
+                <Link to="/sign-in" className="underline">
+                  Sign in
+                </Link>
               </p>
             </div>
           </CardFooter>

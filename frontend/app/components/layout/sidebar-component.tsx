@@ -2,7 +2,6 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/provider/auth-context';
 import type { Workspace } from '@/types';
 import {
-  CheckCircle2,
   ChevronsLeft,
   ChevronsRight,
   LayoutDashboard,
@@ -10,7 +9,7 @@ import {
   LogOut,
   Settings,
   Users,
-  Wrench,
+  Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
@@ -18,8 +17,12 @@ import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import SidebarNav from './sidebar-nav';
 
-const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Workspace | null }) => {
-  const { user, logout } = useAuth();
+const SidebarComponent = ({
+  currentWorkspace,
+}: {
+  currentWorkspace: Workspace | null;
+}) => {
+  const { logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
@@ -44,11 +47,6 @@ const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Workspace | 
       icon: Users,
     },
     {
-      title: 'Achieved',
-      href: `/achieved`,
-      icon: CheckCircle2,
-    },
-    {
       title: 'Settings',
       href: '/settings',
       icon: Settings,
@@ -66,12 +64,17 @@ const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Workspace | 
         <Link to="/dashboard" className="flex items-center">
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <Wrench className="size-6 text-blue-600" />
-              <span className="font-semibold text-lg hidden md:block">TaskHub</span>
+              <Zap className="size-6 text-blue-600" />
+              <div className="text-lg font-bold ">
+                TASK
+                <span className="text-red-500 font-light hover:!text-red-600">
+                  IO
+                </span>
+              </div>
             </div>
           )}
 
-          {isCollapsed && <Wrench className="size-6 text-blue-600" />}
+          {isCollapsed && <Zap className="size-6 text-blue-600" />}
         </Link>
 
         <Button
@@ -80,7 +83,11 @@ const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Workspace | 
           className="ml-auto hidden md:block"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
-          {isCollapsed ? <ChevronsRight className="size-4" /> : <ChevronsLeft className="size-4" />}
+          {isCollapsed ? (
+            <ChevronsRight className="size-4" />
+          ) : (
+            <ChevronsLeft className="size-4" />
+          )}
         </Button>
       </div>
 
@@ -94,7 +101,11 @@ const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Workspace | 
       </ScrollArea>
 
       <div>
-        <Button variant="ghost" size={isCollapsed ? 'icon' : 'default'} onClick={logout}>
+        <Button
+          variant="ghost"
+          size={isCollapsed ? 'icon' : 'default'}
+          onClick={logout}
+        >
           <LogOut className={cn('size-4', isCollapsed && 'mr-2')} />
           <span className="hidden md:block">Logout</span>
         </Button>
