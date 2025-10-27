@@ -25,13 +25,7 @@ const WorkspaceDetails = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
 
   return (
     <div className="space-y-8">

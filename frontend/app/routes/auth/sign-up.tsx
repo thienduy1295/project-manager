@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { useSignUpMutation } from '@/hooks/use-auth';
 import { signUpSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -145,7 +146,14 @@ const SignUp = () => {
               />
 
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? 'Signing up...' : 'Sign up'}
+                {isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Signing up...
+                  </>
+                ) : (
+                  'Sign up'
+                )}
               </Button>
             </form>
           </Form>

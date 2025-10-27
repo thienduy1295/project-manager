@@ -44,13 +44,7 @@ const TaskDetails = () => {
   const { mutate: archivedTask, isPending: isArchivedTask } =
     useAchievedTaskMutation();
 
-  if (isLoading) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
 
   if (!data) {
     return <div>Task not found</div>;

@@ -1,7 +1,13 @@
 import { Loader } from '@/components/loader';
 import NoDataFound from '@/components/no-data-found';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { CreateWorkspace } from '@/components/workspace/create-workspace';
 import WorkspaceAvatar from '@/components/workspace/workspace-avatar';
 import { useGetWorkspacesQuery } from '@/hooks/use-workspace';
@@ -18,9 +24,7 @@ const Workspaces = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  if (isLoading) return <Loader />;
 
   return (
     <>
@@ -81,11 +85,15 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
             </div>
           </div>
 
-          <CardDescription>{workspace.description || 'No description'}</CardDescription>
+          <CardDescription>
+            {workspace.description || 'No description'}
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <div className="text-sm text-muted-foreground">View workspace details and projects</div>
+          <div className="text-sm text-muted-foreground">
+            View workspace details and projects
+          </div>
         </CardContent>
       </Card>
     </Link>

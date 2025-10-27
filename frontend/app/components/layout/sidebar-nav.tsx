@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { Workspace } from '@/types';
 import type { LucideIcon } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useFetcher, useLocation } from 'react-router';
 import { Button } from '../ui/button';
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -23,32 +23,45 @@ const SidebarNav = ({
   ...props
 }: SidebarNavProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const fetcher = useFetcher();
+
   return (
     <nav className={cn('flex flex-col gap-y-2', className)} {...props}>
       {items.map((el) => {
         const Icon = el.icon;
         const isActive = location.pathname === el.href;
 
-        const handleClick = () => {
-          if (el.href === '/workspaces') {
-            navigate(el.href);
-          } else if (currentWorkspace && currentWorkspace._id) {
-            navigate(`${el.href}?workspaceId=${currentWorkspace._id}`);
-          } else {
-            navigate(el.href);
-          }
+        const targetUrl =
+          el.href === '/workspaces'
+            ? el.href
+            : currentWorkspace && currentWorkspace._id
+              ? `${el.href}?workspaceId=${currentWorkspace._id}`
+              : el.href;
+
+        const handleMouseEnter = () => {
+          // Prefetch on hover for instant navigation
+          fetcher.load(targetUrl);
         };
 
         return (
           <Button
             key={el.href}
             variant={isActive ? 'outline' : 'ghost'}
-            className={cn('justify-start', isActive && 'bg-blue-800/20 text-blue-600 font-medium')}
-            onClick={handleClick}
+            className={cn(
+              'justify-start',
+              isActive && 'bg-blue-800/20 text-blue-600 font-medium'
+            )}
+            asChild
+            onMouseEnter={handleMouseEnter}
           >
-            <Icon className="mr-2 size-4" />
-            {isCollapsed ? <span className="sr-only">{el.title}</span> : el.title}
+            <Link to={targetUrl}>
+              <Icon className="mr-2 size-4" />
+              {isCollapsed ? (
+                <span className="sr-only">{el.title}</span>
+              ) : (
+                el.title
+              )}
+            </Link>
           </Button>
         );
       })}

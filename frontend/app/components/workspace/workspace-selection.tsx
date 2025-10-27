@@ -10,6 +10,7 @@ import { useGetWorkspacesQuery } from '@/hooks/use-workspace';
 import type { Workspace } from '@/types';
 import { PlusCircle, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
+import { Loader } from '../loader';
 import WorkspaceAvatar from './workspace-avatar';
 
 interface WorkspaceSelectionProps {
@@ -35,16 +36,7 @@ const WorkspaceSelection = ({
     navigate(`${currentPath}?workspaceId=${workspace._id}`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading workspaces...</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
 
   return (
     <div className="max-w-4xl mx-auto p-6">

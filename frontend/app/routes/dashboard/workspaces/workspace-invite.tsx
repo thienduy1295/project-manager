@@ -80,12 +80,7 @@ const WorkspaceInvite = () => {
     navigate('/workspaces');
   };
 
-  if (isLoading)
-    return (
-      <div className="flex w-full h-screen items-center justify-center">
-        <Loader />
-      </div>
-    );
+  if (isLoading) return <Loader />;
 
   if (!workspace) {
     return (

@@ -34,12 +34,7 @@ const ProjectDetails = () => {
     isLoading: boolean;
   };
 
-  if (isLoading)
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+  if (isLoading) return <Loader />;
 
   const { project, tasks } = data;
   const projectProgress = getProjectProgress(tasks);

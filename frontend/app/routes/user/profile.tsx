@@ -133,12 +133,7 @@ const Profile = () => {
     );
   };
 
-  if (isPending)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader className="animate-spin" />
-      </div>
-    );
+  if (isPending) return <Loader />;
 
   return (
     <div className="space-y-8">
