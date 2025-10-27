@@ -4,6 +4,7 @@ import {
 } from '@/hooks/use-task';
 import type { Comment, User } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Loader } from '../loader';
@@ -98,7 +99,14 @@ export const CommentSection = ({
             disabled={!newComment.trim() || isPending}
             onClick={handleAddComment}
           >
-            Post Comment
+            {isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Posting comment...
+              </>
+            ) : (
+              'Post Comment'
+            )}
           </Button>
         </div>
       </div>
