@@ -28,7 +28,7 @@ import {
 import { useAuth } from '@/provider/auth-context';
 import type { User } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Loader, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -133,7 +133,13 @@ const Profile = () => {
     );
   };
 
-  if (isPending) return <Loader />;
+  if (isPending)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <span>Loading...</span>
+      </div>
+    );
 
   return (
     <div className="space-y-8">

@@ -30,7 +30,7 @@ const SidebarNav = ({
   const isNavigating = navigation.state === 'loading';
 
   return (
-    <nav className={cn('flex flex-col gap-y-2', className)} {...props}>
+    <nav className={cn('flex flex-col gap-1', className)} {...props}>
       {items.map((el) => {
         const Icon = el.icon;
         const isActive = location.pathname === el.href;
@@ -58,11 +58,13 @@ const SidebarNav = ({
         return (
           <Button
             key={el.href}
-            variant={isActive ? 'outline' : 'ghost'}
+            variant={isActive ? 'default' : 'ghost'}
             className={cn(
-              'justify-start transition-all duration-150',
-              isActive && 'bg-blue-800/20 text-blue-600 font-medium',
-              isCurrentlyNavigating && 'opacity-70 bg-muted'
+              'justify-start relative group transition-all duration-200',
+              isActive
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/30 dark:from-blue-600 dark:to-blue-700'
+                : 'hover:bg-slate-200 dark:hover:bg-slate-800',
+              isCurrentlyNavigating && 'opacity-60'
             )}
             asChild
             onMouseEnter={handleMouseEnter}
@@ -70,14 +72,22 @@ const SidebarNav = ({
             <Link to={targetUrl}>
               <Icon
                 className={cn(
-                  'mr-2 size-4',
-                  isCurrentlyNavigating && 'animate-pulse'
+                  'mr-2 size-5 transition-transform duration-200',
+                  isCurrentlyNavigating && 'animate-pulse',
+                  isActive && 'text-white',
+                  !isActive &&
+                    'text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-500'
                 )}
               />
               {isCollapsed ? (
                 <span className="sr-only">{el.title}</span>
               ) : (
-                <span className={cn(isCurrentlyNavigating && 'opacity-70')}>
+                <span
+                  className={cn(
+                    'font-medium transition-colors',
+                    isCurrentlyNavigating && 'opacity-70'
+                  )}
+                >
                   {el.title}
                 </span>
               )}
