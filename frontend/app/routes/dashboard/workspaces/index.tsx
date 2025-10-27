@@ -1,5 +1,5 @@
-import { Loader } from '@/components/loader';
 import NoDataFound from '@/components/no-data-found';
+import { WorkspacesSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,7 +24,7 @@ const Workspaces = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <WorkspacesSkeleton />;
 
   return (
     <>

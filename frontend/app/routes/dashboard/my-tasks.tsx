@@ -1,4 +1,4 @@
-import { Loader } from '@/components/loader';
+import { MyTasksSkeleton } from '@/components/skeletons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -111,7 +111,7 @@ const MyTasks = () => {
   );
   const doneTasks = sortedTasks.filter((task) => task.status === 'Done');
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <MyTasksSkeleton />;
 
   return (
     <div className="space-y-6">

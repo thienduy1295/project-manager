@@ -1,4 +1,4 @@
-import { Loader } from '@/components/loader';
+import { MembersSkeleton } from '@/components/skeletons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -80,7 +80,7 @@ const Members = () => {
     );
   }
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <MembersSkeleton />;
 
   if (!data || !workspaceId) return <div>No workspace found</div>;
 

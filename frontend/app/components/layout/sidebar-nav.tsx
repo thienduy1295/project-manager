@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { Workspace } from '@/types';
 import type { LucideIcon } from 'lucide-react';
-import { Link, useFetcher, useLocation } from 'react-router';
+import { Link, useFetcher, useLocation, useNavigation } from 'react-router';
 import { Button } from '../ui/button';
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -24,6 +24,10 @@ const SidebarNav = ({
 }: SidebarNavProps) => {
   const location = useLocation();
   const fetcher = useFetcher();
+  const navigation = useNavigation();
+
+  // Check if any link is being navigated to
+  const isNavigating = navigation.state === 'loading';
 
   return (
     <nav className={cn('flex flex-col gap-y-2', className)} {...props}>
@@ -38,9 +42,17 @@ const SidebarNav = ({
               ? `${el.href}?workspaceId=${currentWorkspace._id}`
               : el.href;
 
+        // Check if this specific link is being navigated to
+        const isCurrentlyNavigating =
+          isNavigating &&
+          (targetUrl === navigation.location?.pathname ||
+            navigation.location?.pathname?.includes(el.href));
+
         const handleMouseEnter = () => {
           // Prefetch on hover for instant navigation
-          fetcher.load(targetUrl);
+          if (targetUrl && !isActive) {
+            fetcher.load(targetUrl);
+          }
         };
 
         return (
@@ -48,18 +60,26 @@ const SidebarNav = ({
             key={el.href}
             variant={isActive ? 'outline' : 'ghost'}
             className={cn(
-              'justify-start',
-              isActive && 'bg-blue-800/20 text-blue-600 font-medium'
+              'justify-start transition-all duration-150',
+              isActive && 'bg-blue-800/20 text-blue-600 font-medium',
+              isCurrentlyNavigating && 'opacity-70 bg-muted'
             )}
             asChild
             onMouseEnter={handleMouseEnter}
           >
             <Link to={targetUrl}>
-              <Icon className="mr-2 size-4" />
+              <Icon
+                className={cn(
+                  'mr-2 size-4',
+                  isCurrentlyNavigating && 'animate-pulse'
+                )}
+              />
               {isCollapsed ? (
                 <span className="sr-only">{el.title}</span>
               ) : (
-                el.title
+                <span className={cn(isCurrentlyNavigating && 'opacity-70')}>
+                  {el.title}
+                </span>
               )}
             </Link>
           </Button>

@@ -1,7 +1,7 @@
 import { RecentProjects } from '@/components/dashboard/recent-projects';
 import { StatisticsCharts } from '@/components/dashboard/statistics-charts';
 import { StatsCard } from '@/components/dashboard/stats-card';
-import { Loader } from '@/components/loader';
+import { DashboardSkeleton } from '@/components/skeletons';
 import { UpcomingTasks } from '@/components/upcoming-tasks';
 import { CreateWorkspace } from '@/components/workspace/create-workspace';
 import WorkspaceSelection from '@/components/workspace/workspace-selection';
@@ -64,7 +64,7 @@ const Dashboard = () => {
     );
   }
 
-  if (isPending) return <Loader />;
+  if (isPending) return <DashboardSkeleton />;
 
   return (
     <>

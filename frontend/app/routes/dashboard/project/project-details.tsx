@@ -1,5 +1,5 @@
 import { BackButton } from '@/components/back-button';
-import { Loader } from '@/components/loader';
+import { ProjectDetailsSkeleton } from '@/components/skeletons';
 import { CreateTaskDialog } from '@/components/task/create-task-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +34,7 @@ const ProjectDetails = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <ProjectDetailsSkeleton />;
 
   const { project, tasks } = data;
   const projectProgress = getProjectProgress(tasks);

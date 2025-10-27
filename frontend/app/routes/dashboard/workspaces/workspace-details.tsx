@@ -1,5 +1,5 @@
-import { Loader } from '@/components/loader';
 import { CreateProjectDialog } from '@/components/project/create-project';
+import { WorkspaceDetailsSkeleton } from '@/components/skeletons';
 import { InviteMemberDialog } from '@/components/workspace/invite-member';
 import { ProjectList } from '@/components/workspace/project-list';
 import WorkspaceHeader from '@/components/workspace/workspace-header';
@@ -25,7 +25,7 @@ const WorkspaceDetails = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <WorkspaceDetailsSkeleton />;
 
   return (
     <div className="space-y-8">

@@ -1,5 +1,5 @@
 import { BackButton } from '@/components/back-button';
-import { Loader } from '@/components/loader';
+import { TaskDetailsSkeleton } from '@/components/skeletons';
 import { CommentSection } from '@/components/task/comment-section';
 import { SubTasksDetails } from '@/components/task/sub-tasks';
 import { TaskActivity } from '@/components/task/task-activity';
@@ -44,7 +44,7 @@ const TaskDetails = () => {
   const { mutate: archivedTask, isPending: isArchivedTask } =
     useAchievedTaskMutation();
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <TaskDetailsSkeleton />;
 
   if (!data) {
     return <div>Task not found</div>;
